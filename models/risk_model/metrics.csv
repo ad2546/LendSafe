@@ -1,0 +1,26 @@
+accuracy,precision,recall,f1,auc,feature_importance
+0.9573333333333334,0.9522821576763485,0.9807692307692307,0.9663157894736842,0.9635994423228466,"                            feature  importance
+1                      credit_score    0.246983
+5                       delinq_2yrs    0.207667
+3                         dti_ratio    0.086068
+10                       risk_score    0.034932
+17    loan_purpose_home_improvement    0.027433
+16  loan_purpose_debt_consolidation    0.027220
+6                    inquiries_6mon    0.026836
+14                 loan_purpose_car    0.024295
+2                     annual_income    0.022950
+19      loan_purpose_small_business    0.022622
+21               util_bucket_medium    0.022468
+7                     open_accounts    0.022313
+9                    income_to_loan    0.021863
+11          home_ownership_MORTGAGE    0.021531
+8                    revolving_util    0.020772
+22                 util_bucket_high    0.020619
+18      loan_purpose_major_purchase    0.020166
+4                 employment_length    0.020027
+0                       loan_amount    0.020018
+15         loan_purpose_credit_card    0.019800
+20                  util_bucket_low    0.019426
+12               home_ownership_OWN    0.019222
+13              home_ownership_RENT    0.013723
+23            util_bucket_very_high    0.011044"
