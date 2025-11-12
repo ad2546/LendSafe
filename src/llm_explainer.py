@@ -36,8 +36,17 @@ class GraniteLoanExplainer:
         logger.info(f"Loading base model: {base_model_path}")
 
         # Load tokenizer from adapter path or base model
+        # Try adapter first, fall back to base model if it fails
         tokenizer_path = adapter_path if adapter_path else base_model_path
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+        except Exception as e:
+            if adapter_path:
+                logger.warning(f"Failed to load tokenizer from adapter path: {e}")
+                logger.info("Falling back to base model tokenizer")
+                self.tokenizer = AutoTokenizer.from_pretrained(base_model_path)
+            else:
+                raise
 
         # Set pad token if not already set
         if self.tokenizer.pad_token is None:

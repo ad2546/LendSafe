@@ -177,7 +177,14 @@ def load_explainer():
                     local_dir=str(adapter_path),
                     local_dir_use_symlinks=False
                 )
-                st.success("✅ Model downloaded successfully!")
+
+                # Verify download succeeded by checking for key files
+                required_files = ["adapter_model.safetensors", "adapter_config.json", "tokenizer.json"]
+                if all((adapter_path / f).exists() for f in required_files):
+                    st.success("✅ Model downloaded successfully!")
+                else:
+                    raise FileNotFoundError("Model files incomplete after download")
+
             except Exception as e:
                 st.error(f"❌ Error downloading model from Hugging Face: {e}")
                 st.info("Falling back to base model (no fine-tuning)")
@@ -186,6 +193,13 @@ def load_explainer():
         st.warning("⚠️ Fine-tuned model not found. Using base model only.")
         st.info("To use the fine-tuned model, set HF_MODEL_REPO in Streamlit secrets.")
         adapter_path = None
+
+    # Verify adapter_path has required files if it exists
+    if adapter_path and adapter_path.exists():
+        required_files = ["adapter_model.safetensors", "adapter_config.json", "tokenizer.json"]
+        if not all((adapter_path / f).exists() for f in required_files):
+            st.warning("⚠️ Adapter files incomplete. Using base model only.")
+            adapter_path = None
 
     # Load model
     with st.spinner("Loading AI model... (this may take 30-60 seconds on first run)"):
