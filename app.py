@@ -171,23 +171,41 @@ def load_explainer():
         with st.spinner("📥 Downloading fine-tuned model from Hugging Face (first time only, ~2-3 min)..."):
             try:
                 from huggingface_hub import snapshot_download
+                import time
+
                 adapter_path.mkdir(parents=True, exist_ok=True)
-                snapshot_download(
+
+                # Download with progress tracking
+                downloaded_path = snapshot_download(
                     repo_id=hf_repo,
                     local_dir=str(adapter_path),
-                    local_dir_use_symlinks=False
+                    local_dir_use_symlinks=False,
+                    resume_download=True
                 )
 
+                # Wait a moment for files to be written
+                time.sleep(2)
+
+                # List what was actually downloaded (for debugging)
+                downloaded_files = list(adapter_path.glob("*"))
+                logger.info(f"Downloaded {len(downloaded_files)} files to {adapter_path}")
+
                 # Verify download succeeded by checking for key files
-                required_files = ["adapter_model.safetensors", "adapter_config.json", "tokenizer.json"]
-                if all((adapter_path / f).exists() for f in required_files):
-                    st.success("✅ Model downloaded successfully!")
+                required_files = ["adapter_model.safetensors", "adapter_config.json"]
+                missing_files = [f for f in required_files if not (adapter_path / f).exists()]
+
+                if not missing_files:
+                    st.success(f"✅ Model downloaded successfully! ({len(downloaded_files)} files)")
                 else:
-                    raise FileNotFoundError("Model files incomplete after download")
+                    raise FileNotFoundError(f"Missing files after download: {missing_files}")
 
             except Exception as e:
                 st.error(f"❌ Error downloading model from Hugging Face: {e}")
                 st.info("Falling back to base model (no fine-tuning)")
+                # Clean up partial download
+                import shutil
+                if adapter_path.exists():
+                    shutil.rmtree(adapter_path, ignore_errors=True)
                 adapter_path = None
     elif not adapter_path.exists():
         st.warning("⚠️ Fine-tuned model not found. Using base model only.")
@@ -196,9 +214,11 @@ def load_explainer():
 
     # Verify adapter_path has required files if it exists
     if adapter_path and adapter_path.exists():
-        required_files = ["adapter_model.safetensors", "adapter_config.json", "tokenizer.json"]
-        if not all((adapter_path / f).exists() for f in required_files):
-            st.warning("⚠️ Adapter files incomplete. Using base model only.")
+        required_files = ["adapter_model.safetensors", "adapter_config.json"]
+        missing_files = [f for f in required_files if not (adapter_path / f).exists()]
+
+        if missing_files:
+            st.warning(f"⚠️ Adapter files incomplete. Missing: {missing_files}. Using base model only.")
             adapter_path = None
 
     # Load model
