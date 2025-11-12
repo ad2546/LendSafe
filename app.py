@@ -151,11 +151,20 @@ def load_explainer():
     base_model_path = "ibm-granite/granite-4.0-h-350m"
 
     # Check if we need to download model from Hugging Face
-    # Try Streamlit secrets first, then environment variable
+    # Try multiple sources: secrets, env var, or hardcoded default for HF Spaces
+    hf_repo = None
     try:
         hf_repo = st.secrets.get("HF_MODEL_REPO")
     except:
+        pass
+
+    if not hf_repo:
         hf_repo = os.getenv("HF_MODEL_REPO")
+
+    # If still not found and we're on HF Spaces, use the model from same user
+    if not hf_repo and os.path.exists("/app"):  # HF Spaces indicator
+        hf_repo = "notatharva0699/lendsafe-granite"
+        st.info("🤖 Using default model: notatharva0699/lendsafe-granite")
 
     # If adapter doesn't exist locally and HF repo is configured
     if not adapter_path.exists() and hf_repo:
