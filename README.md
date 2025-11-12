@@ -79,11 +79,14 @@ Visit `http://localhost:7860` to use the app!
 **Fine-tuned Model:** [notatharva0699/lendsafe-granite](https://huggingface.co/notatharva0699/lendsafe-granite)
 
 ### Fine-tuning Specs
-- **Training Data:** 1000+ synthetic loan explanations
+- **Training Data:** 1,500 synthetic loan explanations
 - **Method:** LoRA (Low-Rank Adaptation)
 - **Parameters:** r=8, alpha=16, dropout=0.05
 - **Target Modules:** q_proj, k_proj, v_proj, o_proj
-- **Training Time:** ~2 hours on M2 MacBook Air
+- **Training Hardware:** Google Colab Tesla T4 GPU (15.8 GB VRAM)
+- **Training Time:** ~30 minutes (3 epochs)
+- **Training Loss:** 0.411
+- **Trainable Parameters:** 163,840 (0.05% of total 340M params)
 - **Adapter Size:** 660 KB
 
 ### Performance Metrics
