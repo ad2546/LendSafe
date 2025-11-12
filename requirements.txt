@@ -19,6 +19,7 @@ sentence-transformers>=2.2.0
 
 # Frontend
 streamlit>=1.29.0
+gradio>=4.0.0
 
 # PDF Generation
 reportlab>=4.0.0
