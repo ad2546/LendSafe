@@ -221,15 +221,16 @@ def analyze_loan(credit_score, income, employment, home_ownership,
 
     return decision_output, risk_output, explanation, metrics
 
-# Custom CSS
+# Custom CSS - Dark Theme
 custom_css = """
 .gradio-container {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #0e1117 !important;
 }
 .gr-box {
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #333;
+    background: #1e2127 !important;
 }
 .gr-button-primary {
     background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -240,18 +241,41 @@ custom_css = """
     font-weight: bold;
     padding: 20px;
     text-align: center;
+    background: #1e2127 !important;
+    color: #fafafa !important;
+    border-radius: 8px;
+}
+#risk_output {
+    background: #1e2127 !important;
+    color: #fafafa !important;
+    padding: 15px;
+    border-radius: 8px;
+}
+#metrics_output {
+    background: #1e2127 !important;
+    color: #fafafa !important;
+    padding: 15px;
+    border-radius: 8px;
 }
 #explanation_output {
     font-size: 16px;
     line-height: 1.6;
     padding: 20px;
-    background: #f9fafb;
+    background: #1e2127 !important;
+    color: #fafafa !important;
     border-radius: 8px;
+    border: 1px solid #333;
+}
+.markdown-text {
+    color: #fafafa !important;
+}
+label {
+    color: #fafafa !important;
 }
 """
 
 # Build Gradio Interface
-with gr.Blocks(css=custom_css, title="LendSafe - AI Loan Explainer") as demo:
+with gr.Blocks(css=custom_css, title="LendSafe - AI Loan Explainer", theme=gr.themes.Soft(primary_hue="purple")) as demo:
     gr.Markdown("""
     # 🏦 LendSafe
     ### AI-Powered Loan Decision Explainer | Fine-tuned IBM Granite 350M
