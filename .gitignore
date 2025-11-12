@@ -76,6 +76,8 @@ docs/_build/
 
 # Streamlit
 .streamlit/
+!.streamlit/config.toml
+!.streamlit/secrets.toml
 
 # Keep directory structure but ignore contents
 !models/granite-lendsafe/.gitkeep
