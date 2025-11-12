@@ -151,7 +151,11 @@ def load_explainer():
     base_model_path = "ibm-granite/granite-4.0-h-350m"
 
     # Check if we need to download model from Hugging Face
-    hf_repo = os.getenv("HF_MODEL_REPO")
+    # Try Streamlit secrets first, then environment variable
+    try:
+        hf_repo = st.secrets.get("HF_MODEL_REPO")
+    except:
+        hf_repo = os.getenv("HF_MODEL_REPO")
 
     # If adapter doesn't exist locally and HF repo is configured
     if not adapter_path.exists() and hf_repo:
