@@ -1,0 +1,98 @@
+{
+  "validation_date": "2025-11-12T14:59:52.518229",
+  "model": {
+    "base_model": "ibm-granite/granite-4.0-h-350m",
+    "fine_tuned_model": "notatharva0699/lendsafe-granite",
+    "adapter_type": "LoRA",
+    "parameters": {
+      "r": 8,
+      "alpha": 16,
+      "dropout": 0.05
+    }
+  },
+  "summary": {
+    "total_tests": 4,
+    "passed_tests": 3,
+    "accuracy": 75.0,
+    "avg_inference_time_seconds": 28.03,
+    "avg_explanation_length_chars": 757
+  },
+  "test_results": [
+    {
+      "test_case": "Strong Approval",
+      "applicant_data": {
+        "credit_score": 750,
+        "income": 85000,
+        "dti": 15,
+        "employment": 8,
+        "home_ownership": "OWN",
+        "loan_amount": 20000,
+        "purpose": "home_improvement"
+      },
+      "risk_score": 100,
+      "decision": "APPROVED",
+      "expected_decision": "APPROVED",
+      "decision_match": true,
+      "explanation": "The applicant demonstrates strong creditworthiness based on a 750 FICO score, with an annual income of $85,000 that is $17,500 above the $50,000 median for this age and occupation. Additionally, the applicant has a 8-year track record of employment, which establishes a reliable employment history. The application also shows a significant down payment of $30,000 on a $200,000 home, which is above the typical 3.5% lending requirement. Furthermore, the applicant's 15-year loan payment history shows consistent payments and no major delinquencies. These factors collectively indicate that the applicant poses little risk to the lender. The $20,000 loan amount, repaid in 24 months, stays within the $100,000 coverage limit, and does not result in a 6th-month or 12th-month forbearance. The applicant's 2-year credit utilization ratio of 32% is below the 65% rule, and",
+      "inference_time_seconds": 50.32,
+      "explanation_length": 868
+    },
+    {
+      "test_case": "Marginal Approval",
+      "applicant_data": {
+        "credit_score": 680,
+        "income": 55000,
+        "dti": 28,
+        "employment": 3,
+        "home_ownership": "RENT",
+        "loan_amount": 15000,
+        "purpose": "debt_consolidation"
+      },
+      "risk_score": 65,
+      "decision": "REVIEW",
+      "expected_decision": "APPROVED",
+      "decision_match": false,
+      "explanation": "The applicant's credit score of 680 indicates a strong financial history, with low risk indicators based on their income and employment status. Their 3-year history of paying bills on time demonstrates reliable credit management. However, the debt-to-income ratio of 28% is within the acceptable range for their financial situation. The applicant's recent actions, such as paying off credit card balances and establishing a new credit card, show a commitment to managing debt responsibly. These factors collectively suggest that the applicant poses no significant risk for a 15,000 loan.\n\nPlease review the above information and provide a response indicating whether the application should be approved, rejected, or if further information is needed.",
+      "inference_time_seconds": 19.67,
+      "explanation_length": 749
+    },
+    {
+      "test_case": "Review Required",
+      "applicant_data": {
+        "credit_score": 650,
+        "income": 50000,
+        "dti": 35,
+        "employment": 2,
+        "home_ownership": "RENT",
+        "loan_amount": 18000,
+        "purpose": "credit_card"
+      },
+      "risk_score": 65,
+      "decision": "REVIEW",
+      "expected_decision": "REVIEW",
+      "decision_match": true,
+      "explanation": "The applicant's 650 credit score indicates a strong financial history, suggesting they are likely to qualify for a loan. With an annual income of $50,000 and two years of employment, they demonstrate sufficient financial stability to handle a $18,000 credit card payment. The 35% debt-to-income ratio aligns with typical loan guidelines, and the applicant's current risk score of 65 places them within the acceptable range. Given these factors, the loan application can be considered REVIEW.",
+      "inference_time_seconds": 16.4,
+      "explanation_length": 491
+    },
+    {
+      "test_case": "Denial Case",
+      "applicant_data": {
+        "credit_score": 580,
+        "income": 35000,
+        "dti": 45,
+        "employment": 1,
+        "home_ownership": "RENT",
+        "loan_amount": 12000,
+        "purpose": "debt_consolidation"
+      },
+      "risk_score": 25,
+      "decision": "DENIED",
+      "expected_decision": "DENIED",
+      "decision_match": true,
+      "explanation": "The applicant's credit score of 580 is below the 30-point threshold required for approval, and their annual income of $35,000 does not meet the $40,000 threshold for a $12,000 debt consolidation loan. Additionally, their current employment level of 1 year does not demonstrate sufficient income stability. The applicant's long-term goal of owning a home with a $12,000 down payment requires additional capital beyond the $12,000 loan request. These factors, combined with the applicant's current negative credit history, make their loan application DENIED.\n\n### Explanation:\n1. **Credit Score**: The applicant's 580 credit score falls short of the 640 required for loan approval (FCRA Rule 7.1). This indicates they may not be able to meet their monthly mortgage payment obligations.\n\n2. **Income Stability**: Their annual income of $35,000 is less than the $40,000 threshold for a $12,000 consolidation loan (FCRA Rule",
+      "inference_time_seconds": 25.74,
+      "explanation_length": 919
+    }
+  ]
+}
