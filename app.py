@@ -243,10 +243,28 @@ def main():
     try:
         explainer = load_explainer()
         risk_model = load_risk_model()
+
+        # Check if explainer loaded successfully
+        if explainer is None:
+            st.error("❌ Failed to load AI model. The app cannot generate explanations.")
+            st.info("""
+            **The model failed to load. This could be because:**
+
+            1. **Streamlit Cloud limitations**: The base Granite model (~700MB) may be too large for the free tier
+            2. **Missing dependencies**: Check that all required packages are installed
+            3. **No HF_MODEL_REPO configured**: Add your Hugging Face model repo in Streamlit secrets
+
+            **To fix this:**
+            - Upload your model to Hugging Face: `hf upload notatharva0699/lendsafe-granite models/granite-finetuned/`
+            - Add secret in Streamlit Cloud: `HF_MODEL_REPO = "notatharva0699/lendsafe-granite"`
+            - Or try a smaller model variant
+            """)
+            return
+
         st.success("✅ AI models loaded successfully!")
     except Exception as e:
         st.error(f"❌ Error loading models: {str(e)}")
-        st.info("Make sure the fine-tuned model is in models/granite-finetuned/")
+        st.info("Check the error logs for details. The app cannot continue without the AI model.")
         return
 
     # Sidebar - Info
