@@ -170,23 +170,40 @@ def load_explainer():
     if not adapter_path.exists() and hf_repo:
         with st.spinner("📥 Downloading fine-tuned model from Hugging Face (first time only, ~2-3 min)..."):
             try:
-                from huggingface_hub import snapshot_download
+                from huggingface_hub import hf_hub_download
                 import time
 
                 adapter_path.mkdir(parents=True, exist_ok=True)
 
-                # Download with progress tracking
-                downloaded_path = snapshot_download(
-                    repo_id=hf_repo,
-                    local_dir=str(adapter_path),
-                    local_dir_use_symlinks=False,
-                    resume_download=True
-                )
+                # Download each file explicitly to handle Git LFS properly
+                files_to_download = [
+                    "adapter_model.safetensors",  # Git LFS file
+                    "adapter_config.json",
+                    "tokenizer.json",
+                    "tokenizer_config.json",
+                    "special_tokens_map.json",
+                    "vocab.json",
+                    "merges.txt"
+                ]
 
-                # Wait a moment for files to be written
-                time.sleep(2)
+                downloaded_count = 0
+                for filename in files_to_download:
+                    try:
+                        file_path = hf_hub_download(
+                            repo_id=hf_repo,
+                            filename=filename,
+                            local_dir=str(adapter_path),
+                            local_dir_use_symlinks=False
+                        )
+                        downloaded_count += 1
+                        logger.info(f"Downloaded: {filename}")
+                    except Exception as file_error:
+                        logger.warning(f"Could not download {filename}: {file_error}")
 
-                # List what was actually downloaded (for debugging)
+                # Wait for filesystem sync
+                time.sleep(1)
+
+                # List what was actually downloaded
                 downloaded_files = list(adapter_path.glob("*"))
                 logger.info(f"Downloaded {len(downloaded_files)} files to {adapter_path}")
 
@@ -195,9 +212,9 @@ def load_explainer():
                 missing_files = [f for f in required_files if not (adapter_path / f).exists()]
 
                 if not missing_files:
-                    st.success(f"✅ Model downloaded successfully! ({len(downloaded_files)} files)")
+                    st.success(f"✅ Model downloaded successfully! ({downloaded_count} files)")
                 else:
-                    raise FileNotFoundError(f"Missing files after download: {missing_files}")
+                    raise FileNotFoundError(f"Missing critical files: {missing_files}")
 
             except Exception as e:
                 st.error(f"❌ Error downloading model from Hugging Face: {e}")
