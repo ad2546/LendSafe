@@ -144,12 +144,48 @@ st.markdown("""
 @st.cache_resource
 def load_explainer():
     """Load the fine-tuned model (cached)"""
+    import os
+    from pathlib import Path
+
+    adapter_path = Path("models/granite-finetuned")
+    base_model_path = "ibm-granite/granite-4.0-h-350m"
+
+    # Check if we need to download model from Hugging Face
+    hf_repo = os.getenv("HF_MODEL_REPO")
+
+    # If adapter doesn't exist locally and HF repo is configured
+    if not adapter_path.exists() and hf_repo:
+        with st.spinner("📥 Downloading fine-tuned model from Hugging Face (first time only, ~2-3 min)..."):
+            try:
+                from huggingface_hub import snapshot_download
+                adapter_path.mkdir(parents=True, exist_ok=True)
+                snapshot_download(
+                    repo_id=hf_repo,
+                    local_dir=str(adapter_path),
+                    local_dir_use_symlinks=False
+                )
+                st.success("✅ Model downloaded successfully!")
+            except Exception as e:
+                st.error(f"❌ Error downloading model from Hugging Face: {e}")
+                st.info("Falling back to base model (no fine-tuning)")
+                adapter_path = None
+    elif not adapter_path.exists():
+        st.warning("⚠️ Fine-tuned model not found. Using base model only.")
+        st.info("To use the fine-tuned model, set HF_MODEL_REPO in Streamlit secrets.")
+        adapter_path = None
+
+    # Load model
     with st.spinner("Loading AI model... (this may take 30-60 seconds on first run)"):
-        explainer = GraniteLoanExplainer(
-            base_model_path="ibm-granite/granite-4.0-h-350m",
-            adapter_path="models/granite-finetuned"
-        )
-    return explainer
+        try:
+            explainer = GraniteLoanExplainer(
+                base_model_path=base_model_path,
+                adapter_path=str(adapter_path) if adapter_path else None
+            )
+            return explainer
+        except Exception as e:
+            st.error(f"❌ Error loading model: {e}")
+            st.info("Please check the model files or try redeploying the app.")
+            return None
 
 
 @st.cache_resource

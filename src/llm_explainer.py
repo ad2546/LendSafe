@@ -22,7 +22,7 @@ class GraniteLoanExplainer:
     def __init__(
         self,
         base_model_path: str = "ibm-granite/granite-4.0-h-350m",
-        adapter_path: str = "models/granite-finetuned",
+        adapter_path: Optional[str] = "models/granite-finetuned",
         device: str = "auto"
     ):
         """
@@ -30,13 +30,14 @@ class GraniteLoanExplainer:
 
         Args:
             base_model_path: Path to base Granite model
-            adapter_path: Path to fine-tuned LoRA adapters
+            adapter_path: Path to fine-tuned LoRA adapters (None for base model only)
             device: Device to run inference on ('auto', 'cpu', 'mps', 'cuda')
         """
         logger.info(f"Loading base model: {base_model_path}")
 
-        # Load tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(adapter_path)
+        # Load tokenizer from adapter path or base model
+        tokenizer_path = adapter_path if adapter_path else base_model_path
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
 
         # Set pad token if not already set
         if self.tokenizer.pad_token is None:
@@ -66,9 +67,13 @@ class GraniteLoanExplainer:
         if device == "mps":
             self.model = self.model.to("mps")
 
-        # Load LoRA adapters
-        logger.info(f"Loading fine-tuned adapters from: {adapter_path}")
-        self.model = PeftModel.from_pretrained(self.model, adapter_path)
+        # Load LoRA adapters if provided
+        if adapter_path:
+            logger.info(f"Loading fine-tuned adapters from: {adapter_path}")
+            self.model = PeftModel.from_pretrained(self.model, adapter_path)
+        else:
+            logger.warning("No adapter path provided - using base model only")
+
         self.model.eval()
 
         self.device = device
