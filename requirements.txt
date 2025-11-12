@@ -31,3 +31,7 @@ bert-score>=0.3.13
 # Utilities
 python-dotenv>=1.0.0
 tqdm>=4.66.0
+
+# Deployment (Streamlit Cloud)
+gdown>=4.7.1
+huggingface-hub>=0.19.0
