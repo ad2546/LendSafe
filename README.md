@@ -133,6 +133,7 @@ LendSafe/
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This file
 ├── CLAUDE.md                  # Project planning & architecture
+├── LendSafe_Finetune_Colab.ipynb  # Google Colab training notebook
 ├── .gitignore                 # Git ignore rules
 │
 ├── scripts/
@@ -154,16 +155,42 @@ LendSafe/
 
 ### Fine-tuning Your Own Model
 
+#### Option 1: Google Colab (Recommended - Free GPU!)
+
+Use the included Colab notebook for free GPU training:
+
+1. **Open Notebook**: [LendSafe_Finetune_Colab.ipynb](LendSafe_Finetune_Colab.ipynb)
+2. **Upload to Colab**: Click "Open in Colab" button
+3. **Set Runtime**: Runtime → Change runtime type → GPU (T4)
+4. **Run All Cells**: ~15-30 minutes training time
+5. **Download Model**: Automatically packaged as `.zip`
+
+**Training Results:**
+- Model: IBM Granite 4.0 H 350M (340M parameters)
+- LoRA Configuration: r=8, α=16, dropout=0.05
+- Trainable Parameters: 163,840 (0.05% of total)
+- Training Data: 1,500 loan explanation examples
+- Training Time: ~15-30 minutes on T4 GPU
+- Training Loss: 0.411
+- Cost: **$0** (free Colab tier)
+
+#### Option 2: Local Training
+
 ```bash
 # 1. Download and prepare data
 python scripts/process_lending_data.py
 
-# 2. Generate training examples
+# 2. Generate training examples (1000+ synthetic explanations)
 python scripts/generate_synthetic_explanations.py
 
-# 3. Fine-tune with LoRA
+# 3. Fine-tune with LoRA (requires GPU or 2+ hours on CPU)
 python scripts/finetune_granite.py
 ```
+
+**Local Requirements:**
+- RAM: 8GB+ recommended
+- GPU: Optional but speeds up training 10x
+- Time: 2-3 hours on M2 MacBook Air (CPU)
 
 See [CLAUDE.md](CLAUDE.md) for detailed architecture and development roadmap.
 
@@ -216,4 +243,3 @@ HuggingFace: [@notatharva0699](https://huggingface.co/notatharva0699)
 
 **Built with IBM Granite AI 🤖 | Deployed on Hugging Face Spaces 🤗**
 
-*Perfect for fintech interviews, portfolio projects, and learning regulatory ML!*
