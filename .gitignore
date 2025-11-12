@@ -85,3 +85,5 @@ docs/_build/
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !chromadb/.gitkeep
+
+CLAUDE.md.playwright-mcp/
